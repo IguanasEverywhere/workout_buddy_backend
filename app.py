@@ -68,6 +68,22 @@ def user_workout_data(user_id):
         workouts_resp = Workout.query.filter(Workout.user_id==user_id).all()
         user_workouts = [workout.to_dict() for workout in workouts_resp]
         return user_workouts
+    if request.method == 'POST':
+        request_data = request.get_json()
+
+        exercise_name = request_data['exercise_name']
+        weight = request_data['weight']
+        reps = request_data['reps']
+        notes = request_data['notes']
+        user_id = user_id
+
+        new_workout = Workout(exercise_name=exercise_name, weight=weight, reps=reps, notes=notes, user_id=user_id)
+
+        db.session.add(new_workout)
+        db.session.commit()
+
+        return {"Success": "New workout saved"}
+
 
 @app.route('/next-workout/<user_id>', methods=('GET', 'POST)'))
 def next_workout_suggestion(user_id):
