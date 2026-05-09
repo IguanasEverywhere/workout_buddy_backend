@@ -5,6 +5,8 @@ from sqlalchemy.sql import func
 
 from sqlalchemy.sql import func
 
+from LLM_Call import call_groq
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
@@ -49,8 +51,31 @@ class Workout(db.Model):
             "exercise_name": self.exercise_name,
             "weight": self.weight,
             "reps": self.reps,
+            "notes": self.notes,
             "timestamp": self.timestamp,
             "user_id": self.user_id
         }
+
+@app.route('/data/<user_id>', methods=('GET', 'POST'))
+def user_workout_data(user_id):
+    if request.method == 'GET':
+        workouts_resp = Workout.query.filter(Workout.user_id==user_id).all()
+        user_workouts = [workout.to_dict() for workout in workouts_resp]
+        return user_workouts
+
+@app.route('/next-workout/<user_id>', methods=('GET', 'POST)'))
+def next_workout_suggestion(user_id):
+     if request.method == 'GET':
+        recent_workouts_resp = Workout.query.filter(Workout.user_id==user_id).limit(2).all()
+        recent_workouts = [workout.to_dict() for workout in recent_workouts_resp]
+        call_groq(recent_workouts)
+        return recent_workouts
+
+
+
+
+
+if __name__ == '__main__':
+        app.run(port=5555)
 
 

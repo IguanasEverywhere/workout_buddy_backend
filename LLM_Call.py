@@ -7,18 +7,35 @@ load_dotenv()
 
 api_key = os.getenv("GROQ_API_KEY")
 
-client = Groq(
-    api_key=os.environ.get("GROQ_API_KEY"),
-)
+def call_groq(recent_workouts):
 
-chat_completion = client.chat.completions.create(
-    messages=[
-        {
-            "role": "user",
-            "content": "What should my next workout be if I exercised my biceps yesterday?",
-        }
-    ],
-    model="llama-3.3-70b-versatile",
-)
+    context_str = 'My most recent workouts include: '
 
-print(chat_completion.choices[0].message.content)
+    client = Groq(
+        api_key=os.environ.get("GROQ_API_KEY"),
+    )
+
+    for entry in recent_workouts:
+        context_str += f'''
+        {entry['exercise_name']} at {entry['weight']} lbs for {entry['reps']} reps.
+        My notes from this exercise were: {entry['notes']}
+        '''
+
+    chat_completion = client.chat.completions.create(
+        messages=[
+            {
+            "role": "system",
+            "content": f"""
+            Context:
+            {context_str}
+            """,
+            },
+            {
+                "role": "user",
+                "content": "Given my most recent workouts, what trends do you see, and what workout should I complete next? Refer to my most recent workouts in your answer."
+            }
+        ],
+        model="llama-3.3-70b-versatile",
+    )
+
+    print(chat_completion.choices[0].message.content)
