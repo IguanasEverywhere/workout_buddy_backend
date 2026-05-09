@@ -7,7 +7,7 @@ load_dotenv()
 
 api_key = os.getenv("GROQ_API_KEY")
 
-def call_groq(recent_workouts):
+def call_groq(workouts_obj):
 
     context_str = 'My most recent workouts include: '
 
@@ -15,7 +15,7 @@ def call_groq(recent_workouts):
         api_key=os.environ.get("GROQ_API_KEY"),
     )
 
-    for entry in recent_workouts:
+    for entry in workouts_obj.exercises:
         context_str += f'''
         {entry['exercise_name']} at {entry['weight']} lbs for {entry['reps']} reps.
         My notes from this exercise were: {entry['notes']}
@@ -39,3 +39,4 @@ def call_groq(recent_workouts):
     )
 
     print(chat_completion.choices[0].message.content)
+    workouts_obj.AI_feedback = chat_completion.choices[0].message.content

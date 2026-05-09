@@ -56,6 +56,12 @@ class Workout(db.Model):
             "user_id": self.user_id
         }
 
+class Workout_Data:
+    def __init__(self, exercises, AI_feedback):
+        self.exercises = exercises
+        self.AI_feedback = AI_feedback
+
+
 @app.route('/data/<user_id>', methods=('GET', 'POST'))
 def user_workout_data(user_id):
     if request.method == 'GET':
@@ -68,8 +74,9 @@ def next_workout_suggestion(user_id):
      if request.method == 'GET':
         recent_workouts_resp = Workout.query.filter(Workout.user_id==user_id).limit(2).all()
         recent_workouts = [workout.to_dict() for workout in recent_workouts_resp]
-        call_groq(recent_workouts)
-        return recent_workouts
+        workouts_obj = Workout_Data(recent_workouts, '')
+        call_groq(workouts_obj)
+        return {"workout_advice": workouts_obj.AI_feedback}
 
 
 
