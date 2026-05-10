@@ -90,7 +90,7 @@ def user_workout_data(user_id):
 @app.route('/next-workout/<user_id>', methods=('GET', 'POST)'))
 def next_workout_suggestion(user_id):
      if request.method == 'GET':
-        recent_workouts_resp = Workout.query.filter(Workout.user_id==user_id).limit(8).all()
+        recent_workouts_resp = Workout.query.order_by(Workout.timestamp.desc()).filter(Workout.user_id==user_id).limit(8).all()
         recent_workouts = [workout.to_dict() for workout in recent_workouts_resp]
         workouts_obj = Workout_Data(recent_workouts, '')
         call_groq(workouts_obj)
