@@ -38,5 +38,5 @@ def call_groq(workouts_obj):
         model="llama-3.3-70b-versatile",
     )
 
-    print(chat_completion.choices[0].message.content)
+    # print(chat_completion.choices[0].message.content)
     workouts_obj.AI_feedback = chat_completion.choices[0].message.content
