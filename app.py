@@ -4,12 +4,14 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 
 from sqlalchemy.sql import func
+from flask_cors import CORS
 
 from LLM_Call import call_groq
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -71,7 +73,7 @@ def user_workout_data(user_id):
     if request.method == 'POST':
         request_data = request.get_json()
 
-        exercise_name = request_data['exercise_name']
+        exercise_name = request_data['exercise']
         weight = request_data['weight']
         reps = request_data['reps']
         notes = request_data['notes']
